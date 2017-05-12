@@ -519,7 +519,6 @@ class rssBot
      */
     public function pageData($data = [])
     {
-        if(isset($_POST)){}
         $data = [
             'id'       => isset($data['id']) ? $data['id'] : 0,
             'input'    => [
@@ -540,6 +539,7 @@ class rssBot
             'fid'                => isset($data['fid']) ? (int)$data['fid'] : 0,
             'updated'            => isset($data['updated']) ? $data['updated'] : '',
         ];
+
         return $data;
     }
 
@@ -622,7 +622,7 @@ for (var i = 0, len = elements.length; i < len; ++i){
             $table->construct_cell($lang[$k]);
             $check = [];
             if($v>0) $check = ['checked' => true];
-            $i = $form->generate_check_box($k, $v, $lang[$k.'_note'], $check);
+            $i = $form->generate_check_box($k, 1, $lang[$k.'_note'], $check);
             $table->construct_cell($i);
             $table->construct_row();
         }
@@ -645,6 +645,9 @@ for (var i = 0, len = elements.length; i < len; ++i){
         }
     }
 
+    /**
+     * @return array
+     */
     public function botSettingsFetchType(){
         return [
             'auto',
