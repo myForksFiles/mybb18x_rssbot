@@ -1,5 +1,5 @@
-<?php 
-if(!defined('IN_MYBB')) header('Location: /');
+<?php
+if (!defined('IN_MYBB')) header('Location: /');
 /**
  * Task for plugin RSS Bot / beta only for test env
  *
@@ -12,7 +12,7 @@ if(!defined('IN_MYBB')) header('Location: /');
  * @license    Creative Commons BY-NC-SA 4.0 license
  * @version    0.14beta
  * @link       https://github.com/myForksFiles/mybb18x_rssbot
- * 
+ *
  * @changeLog
  * 2016-08-06 init
  * 2016-08-14 doc/optimisation/fixes
@@ -22,18 +22,32 @@ if(!defined('IN_MYBB')) header('Location: /');
 /**
  * set up hooks
  */
-if(defined('IN_ADMINCP')){
+if (defined('IN_ADMINCP')) {
 
     $plugins->add_hook('admin_config_action_handler', ['rssBot', 'adminAction']);
-    $plugins->add_hook('admin_config_menu',           ['rssBot', 'adminMenu']);
-    $plugins->add_hook('admin_load',                  ['rssBot', 'adminLoad']);
+    $plugins->add_hook('admin_config_menu', ['rssBot', 'adminMenu']);
+    $plugins->add_hook('admin_load', ['rssBot', 'adminLoad']);
     //$plugins->add_hook('admin_config_settings_change', ['rssBot', 'admin_config_settings_change']);
 
-    function rssbot_info(){         return rssbot::info();        }
-    function rssbot_is_installed(){ return rssBot::isInstalled(); }
+    function rssbot_info()
+    {
+        return rssbot::info();
+    }
 
-    function rssbot_install(){      rssBot::installBot();         }
-    function rssbot_uninstall(){    rssBot::uninstallBot();       }
+    function rssbot_is_installed()
+    {
+        return rssBot::isInstalled();
+    }
+
+    function rssbot_install()
+    {
+        rssBot::installBot();
+    }
+
+    function rssbot_uninstall()
+    {
+        rssBot::uninstallBot();
+    }
 
 } else {
     $plugins->add_hook('pre_output_page', ['rssBot', 'pluginThanks']);
@@ -63,8 +77,8 @@ class rssBot
     public function getLink($options = null)
     {
         $url = 'index.php?module=config-rssbot';
-        if($options != null){
-            $url.= '&' . $options;
+        if ($options != null) {
+            $url .= '&' . $options;
         }
         return $url;
     }
@@ -86,23 +100,23 @@ class rssBot
         $lang = self::loadLang();
         return [
             'rssbot' => [
-                'title'       => $lang['list'],
-                'link'        => self::getLink(),
+                'title' => $lang['list'],
+                'link' => self::getLink(),
                 'description' => $lang['list_description']
             ],
             'add' => [
-                'title'       => $lang['add'],
-                'link'        => self::getLink() . '&action=add',
+                'title' => $lang['add'],
+                'link' => self::getLink() . '&action=add',
                 'description' => $lang['add_description']
             ],
             'edit' => [
-                'title'       => $lang['edit'],
-                'link'        => self::getLink() . '&action=edit',
+                'title' => $lang['edit'],
+                'link' => self::getLink() . '&action=edit',
                 'description' => $lang['edit_description']
             ],
             'settings' => [
-                'title'       => $lang['settings'],
-                'link'        => self::getLink() . '&action=settings',
+                'title' => $lang['settings'],
+                'link' => self::getLink() . '&action=settings',
                 'description' => $lang['settings_description']
             ],
         ];
@@ -125,12 +139,12 @@ class rssBot
     static function pluginThanks(&$content)
     {
         global $session, $rssBotThx4plugin;
-        
-        if (!isset($rssBotThx4plugin) && $session->is_spider){
+
+        if (!isset($rssBotThx4plugin) && $session->is_spider) {
             $thx = '<div style="margin:auto; text-align:center;">';
-            $thx.= 'This forum uses <a href="{url}">{url}</a> ';
-            $thx.= 'MyBB {plugin} addons.</div>';
-            $thx.= '</body>';
+            $thx .= 'This forum uses <a href="{url}">{url}</a> ';
+            $thx .= 'MyBB {plugin} addons.</div>';
+            $thx .= '</body>';
             $info = self::info();
             $thx = str_replace('{url}', $info['authorsite'], $thx);
             $thx = str_replace('{plugin}', $info['name'], $thx);
@@ -146,9 +160,9 @@ class rssBot
     {
         $lang = self::loadLang();
         $menu[] = [
-            'id'    => 'rssbot',
+            'id' => 'rssbot',
             'title' => $lang['rssBotTitle'],
-            'link'  => self::getLink()
+            'link' => self::getLink()
         ];
     }
 
@@ -169,13 +183,13 @@ class rssBot
     static function info()
     {
         return [
-            'name'          => 'RSS Bot Plugin',
-            'description'   => 'Fetch RSS feeds and post as Bot',
-            'website'       => 'https://github.com/myForksFiles/mybb18x_rssbot',
-            'author'        => 'KlubZAFIRA.pl',
-            'authorsite'    => 'http://KlubZAFIRA.pl',
-            'version'       => '0.1b',
-            'codename'      => 'rssBot',
+            'name' => 'RSS Bot Plugin',
+            'description' => 'Fetch RSS feeds and post as Bot',
+            'website' => 'https://github.com/myForksFiles/mybb18x_rssbot',
+            'author' => 'KlubZAFIRA.pl',
+            'authorsite' => 'http://KlubZAFIRA.pl',
+            'version' => '0.1b',
+            'codename' => 'rssBot',
             'compatibility' => '18*'
         ];
     }
@@ -189,21 +203,21 @@ class rssBot
         global $db;
         $lang = self::loadLang();
         $task = [
-            'title'       => $lang['rssBotTitle'],
+            'title' => $lang['rssBotTitle'],
             'description' => $lang['rssBotTitle_task'],
-            'file'        => self::RSSBOTFILE,
-            'minute'      => '5,10,15,20,25,30,35,40,45,50,55',
-            'hour'        => '*',
-            'day'         => '*',
-            'month'       => '*',
-            'weekday'     => '*',
-            'nextrun'     => TIME_NOW,
-            'lastrun'     => 0,
-            'enabled'     => 1,
-            'logging'     => 1,
-            'locked'      => 0
+            'file' => self::RSSBOTFILE,
+            'minute' => '5,10,15,20,25,30,35,40,45,50,55',
+            'hour' => '*',
+            'day' => '*',
+            'month' => '*',
+            'weekday' => '*',
+            'nextrun' => TIME_NOW,
+            'lastrun' => 0,
+            'enabled' => 1,
+            'logging' => 1,
+            'locked' => 0
         ];
-        if($db->insert_query('tasks', $task)){
+        if ($db->insert_query('tasks', $task)) {
             return true;
         }
         return false;
@@ -216,15 +230,15 @@ class rssBot
     static function checkTask()
     {
         global $db;
-        $query = 'SELECT COUNT(tid) AS cnt FROM ' 
+        $query = 'SELECT COUNT(tid) AS cnt FROM '
             . TABLE_PREFIX . 'tasks WHERE file = "' . self::RSSBOTFILE . '"';
         $query = $db->query($query);
         $cnt = $db->fetch_array($query);
         $cnt = (int)$cnt['cnt'];
-        if($cnt < 1){
-            if(self::installTask()){
+        if ($cnt < 1) {
+            if (self::installTask()) {
                 return true;
-            } 
+            }
             return false;
         }
         return false;
@@ -237,23 +251,23 @@ class rssBot
     static function installBotExample()
     {
         return [
-            'id'        => '',
-            'pid'       => 1,
-            'tid'       => 1,
-            'fid'       => 1,
-            'enabled'   => 0,
-            'html'      => 1,
-            'locked'    => 1,
-            'asread'    => 1,
-            'link'      => 1,
-            'toimport'  => 5,
+            'id' => '',
+            'pid' => 1,
+            'tid' => 1,
+            'fid' => 1,
+            'enabled' => 0,
+            'html' => 1,
+            'locked' => 1,
+            'asread' => 1,
+            'link' => 1,
+            'toimport' => 5,
             'intervals' => 360,
-            'updated'   => date('Y-m-d H:i:s'),
-            'posterid'  => 'rssBot',
-            'poster'    => 'rssBot',
-            'title'     => 'KlubZAFIRA.pl',
-            'prefix'    => '{rssBot}',
-            'url'       => 'http://feeds.feedburner.com/FanKlubOpelZafiraPolska'
+            'updated' => date('Y-m-d H:i:s'),
+            'posterid' => 'rssBot',
+            'poster' => 'rssBot',
+            'title' => 'KlubZAFIRA.pl',
+            'prefix' => '{rssBot}',
+            'url' => 'http://feeds.feedburner.com/FanKlubOpelZafiraPolska'
         ];
     }
 
@@ -264,7 +278,7 @@ class rssBot
     static function installBotTables($collation)
     {
         return [
-            'CREATE TABLE IF NOT EXISTS `'. TABLE_PREFIX .'rssbot` (
+            'CREATE TABLE IF NOT EXISTS `' . TABLE_PREFIX . 'rssbot` (
 `id` int(10) NOT NULL,
   `pid` int(10) unsigned NOT NULL DEFAULT "0",
   `tid` int(10) unsigned NOT NULL DEFAULT "0",
@@ -283,10 +297,10 @@ class rssBot
   `prefix` tinytext ' . $collation . ',
   `url` tinytext ' . $collation . ' NOT NULL
 ) ENGINE=MyISAM ' . $collation . ';',
-            'ALTER TABLE `'. TABLE_PREFIX .'rssbot` ADD PRIMARY KEY (`id`);',
-            'ALTER TABLE `'. TABLE_PREFIX .'rssbot` ADD KEY `id` (`id`);',
-            'ALTER TABLE `'. TABLE_PREFIX .'rssbot` MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;',
-            'CREATE TABLE IF NOT EXISTS `'. TABLE_PREFIX .'rssbot_log` (
+            'ALTER TABLE `' . TABLE_PREFIX . 'rssbot` ADD PRIMARY KEY (`id`);',
+            'ALTER TABLE `' . TABLE_PREFIX . 'rssbot` ADD KEY `id` (`id`);',
+            'ALTER TABLE `' . TABLE_PREFIX . 'rssbot` MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;',
+            'CREATE TABLE IF NOT EXISTS `' . TABLE_PREFIX . 'rssbot_log` (
 `id` int(10) NOT NULL,
   `pid` int(10) unsigned NOT NULL DEFAULT "0",
   `tid` int(10) unsigned NOT NULL DEFAULT "0",
@@ -294,9 +308,9 @@ class rssBot
   `feedhash` tinytext ' . $collation . ' NOT NULL,
   `feedtime` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM ' . $collation . ';',
-            'ALTER TABLE `'. TABLE_PREFIX .'rssbot_log` ADD PRIMARY KEY (`id`);',
-            'ALTER TABLE `'. TABLE_PREFIX .'rssbot_log` ADD KEY `id` (`id`);',
-            'ALTER TABLE `'. TABLE_PREFIX .'rssbot_log` MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;'
+            'ALTER TABLE `' . TABLE_PREFIX . 'rssbot_log` ADD PRIMARY KEY (`id`);',
+            'ALTER TABLE `' . TABLE_PREFIX . 'rssbot_log` ADD KEY `id` (`id`);',
+            'ALTER TABLE `' . TABLE_PREFIX . 'rssbot_log` MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;'
         ];
     }
 
@@ -307,22 +321,22 @@ class rssBot
     static function installBot()
     {
         global $db;
-        switch ($db->type){
+        switch ($db->type) {
             case 'pgsql':
                 break;
             case 'sqlite':
                 break;
             case 'mysql':
             default:
-                $collation  = $db->build_create_table_collation();
+                $collation = $db->build_create_table_collation();
                 $queries = self::installBotTables($collation);
-                foreach($queries as $v){
+                foreach ($queries as $v) {
                     //$db->write_query($v);
                     $db->query($v);
                 }
                 $db->insert_query('rssbot', self::installBotExample());
                 self::checkTask();
-            break;
+                break;
         }
     }
 
@@ -341,7 +355,7 @@ class rssBot
      */
     static function uninstallBot()
     {
-        if(! isInstalled()){
+        if (!isInstalled()) {
             global $db;
             $db->drop_table('rssbot');// Drop the Table
             $db->drop_table('rssbot_log');// Drop the Table
@@ -362,7 +376,7 @@ class rssBot
             . TABLE_PREFIX . 'forums WHERE type = "f"';
         $query = $this->$db->query($query);
         $this->forumList[0] = '';
-        while($row = $this->$db->fetch_array($query)){
+        while ($row = $this->$db->fetch_array($query)) {
             $this->forumList[$row['fid']] = $row['name'];
         }
     }
@@ -374,15 +388,15 @@ class rssBot
     {
         global $page;
         if ($page->active_action != 'rssbot') return false;
-        
+
         global $mybb, $db;
         $lang = self::loadLang();
 
         $page->add_breadcrumb_item($lang['rssBotTitle']);
         $page->output_header($lang['rssBotTitle']);
-        
+
         self::pageActions();
-        
+
         $page->output_footer();
     }
 
@@ -393,13 +407,13 @@ class rssBot
     {
         global $db;
         $query = 'SELECT fid,'
-                . ' CONCAT(name, " - ", SUBSTRING(description, 1, 30), "...") AS name'
-                . ' FROM ' . TABLE_PREFIX . 'forums '
-                . ' WHERE type = "f" ORDER BY fid ASC'; //@todo
+            . ' CONCAT(name, " - ", SUBSTRING(description, 1, 30), "...") AS name'
+            . ' FROM ' . TABLE_PREFIX . 'forums '
+            . ' WHERE type = "f" ORDER BY fid ASC'; //@todo
         $query = $db->query($query);
         $res = [];
         $res[0] = '';
-        while ($row = $db->fetch_array($query)){
+        while ($row = $db->fetch_array($query)) {
             $res[$row['fid']] = strip_tags($row['name']);
         }
         return $res;
@@ -413,10 +427,10 @@ class rssBot
     {
         global $db;
         $query = 'SELECT id, title, enabled, SUBSTRING(url, 1, 50) AS url'
-                . ' FROM ' . TABLE_PREFIX . 'rssbot ORDER BY id DESC';
+            . ' FROM ' . TABLE_PREFIX . 'rssbot ORDER BY id DESC';
         $query = $db->query($query);
         $res = [];
-        while ($row = $db->fetch_array($query)){
+        while ($row = $db->fetch_array($query)) {
             $res[] = $row;
         }
         return $res;
@@ -430,7 +444,7 @@ class rssBot
     {
         global $db;
         $id = self::getId();
-        if($id>0){ 
+        if ($id > 0) {
             $query = 'SELECT * FROM ' . TABLE_PREFIX . 'rssbot WHERE id = ' . $id;
             $query = $db->query($query);
             $row = $db->fetch_array($query);
@@ -445,7 +459,7 @@ class rssBot
     {
         global $mybb;
         $action = $mybb->input['action'];
-        switch($action){
+        switch ($action) {
             case 'settings':
                 self::botSettings();
                 break;
@@ -453,11 +467,11 @@ class rssBot
                 self::removeEntry();
                 break;
             case 'edit':
-                if(isset($_POST['save'])) self::saveData();
+                if (isset($_POST['save'])) self::saveData();
                 self::pageEdit();
                 break;
             case 'add':
-                if(isset($_POST['save'])) self::saveData();
+                if (isset($_POST['save'])) self::saveData();
                 self::pageAdd();
                 break;
             case 'list':
@@ -474,7 +488,7 @@ class rssBot
     public function pageList()
     {
         global $page;
-        $page->output_nav_tabs(self::pageTabs(),'rssbot');
+        $page->output_nav_tabs(self::pageTabs(), 'rssbot');
         $lang = self::loadLang();
 
         $table = new Table;
@@ -486,19 +500,19 @@ class rssBot
 
         $rows = [];
         $rows = self::dbList();
-        if(count($rows)>0){
-            foreach ($rows as $v){
+        if (count($rows) > 0) {
+            foreach ($rows as $v) {
                 $table->construct_cell($v['id']);
                 $table->construct_cell(
-                    $v['enabled'] ? $lang['enabled']:$lang['disabled']);
+                    $v['enabled'] ? $lang['enabled'] : $lang['disabled']);
                 $table->construct_cell($v['title']);
-                $table->construct_cell(strlen($v['url']) == 50 ? $v['url']. '...' : $v['url']);
-                $url  = '';
+                $table->construct_cell(strlen($v['url']) == 50 ? $v['url'] . '...' : $v['url']);
+                $url = '';
                 $url2 = '';
-                $url  = '<a href="' . self::getLink('action=edit&id=' . $v['id']) . '">';
+                $url = '<a href="' . self::getLink('action=edit&id=' . $v['id']) . '">';
                 $url2 = str_replace('edit', 'delete', $url);
-                $url2.= $lang['delete'] . '</a>';
-                $url.= $lang['edit'] . '</a>';
+                $url2 .= $lang['delete'] . '</a>';
+                $url .= $lang['edit'] . '</a>';
                 $table->construct_cell($url . ' | ' . $url2);
                 $table->construct_row();
             }
@@ -507,7 +521,7 @@ class rssBot
             $table->construct_cell($lang['empty']);
             $table->construct_cell('', ['colspan' => 2]);
 
-            $table->construct_row();            
+            $table->construct_row();
         }
         $table->output($lang['rssBotTitle'] . ' - ' . $lang['list']);
     }
@@ -520,24 +534,24 @@ class rssBot
     public function pageData($data = [])
     {
         $data = [
-            'id'       => isset($data['id']) ? $data['id'] : 0,
-            'input'    => [
-                'title'          => isset($data['title']) ? $data['title'] : '',
-                'url'            => isset($data['url']) ? $data['url'] : '',
-                'poster'         => isset($data['poster']) ? $data['poster'] : 'RSSBot',
-                'toimport'       => isset($data['toimport']) ? (int)$data['toimport'] : '',
-                'intervals'      => isset($data['intervals']) ? $data['intervals'] : 720,
-                'prefix'         => isset($data['prefix']) ? $data['prefix'] : '',
-                'tid'            => isset($data['tid']) ? (int)$data['tid'] : 0,
+            'id' => isset($data['id']) ? $data['id'] : 0,
+            'input' => [
+                'title' => isset($data['title']) ? $data['title'] : '',
+                'url' => isset($data['url']) ? $data['url'] : '',
+                'poster' => isset($data['poster']) ? $data['poster'] : 'RSSBot',
+                'toimport' => isset($data['toimport']) ? (int)$data['toimport'] : '',
+                'intervals' => isset($data['intervals']) ? $data['intervals'] : 720,
+                'prefix' => isset($data['prefix']) ? $data['prefix'] : '',
+                'tid' => isset($data['tid']) ? (int)$data['tid'] : 0,
             ],
             'checkbox' => [
-                'enabled'        => $data['enabled']>0 ? 1 : 0,
-                'html'           => $data['html']>0    ? 1 : 0,
-                'locked'         => $data['locked']>0  ? 1 : 0,
-                'asread'         => $data['asread']>0  ? 1 : 0,
+                'enabled' => $data['enabled'] > 0 ? 1 : 0,
+                'html' => $data['html'] > 0 ? 1 : 0,
+                'locked' => $data['locked'] > 0 ? 1 : 0,
+                'asread' => $data['asread'] > 0 ? 1 : 0,
             ],
-            'fid'                => isset($data['fid']) ? (int)$data['fid'] : 0,
-            'updated'            => isset($data['updated']) ? $data['updated'] : '',
+            'fid' => isset($data['fid']) ? (int)$data['fid'] : 0,
+            'updated' => isset($data['updated']) ? $data['updated'] : '',
         ];
 
         return $data;
@@ -584,10 +598,10 @@ for (var i = 0, len = elements.length; i < len; ++i){
      * acp page form buttons
      * @return string with html
      */
-    public function pageFormButtons($action, $id, $action, $text, $code)
+    public function pageFormButtons($actions, $id, $action, $text, $code)
     {
         return '<input type="hidden" name="id" value="' . $id . '" />
-             <input type="hidden" name="action" value="'.$action.'" />
+             <input type="hidden" name="action" value="' . $actions . '" />
              <input type="hidden" name="save" value="1" />
              <input type="hidden" name="my_post_key" value="' . $code . '" />
              <input type="submit" value="' . $text . '" />';
@@ -606,10 +620,10 @@ for (var i = 0, len = elements.length; i < len; ++i){
         $table = new Table;
         $forumList = $form->generate_select_box('fid', self::dbForumList(), [$data['fid']]);
 
-        foreach ($data['input'] as $k => $v){
+        foreach ($data['input'] as $k => $v) {
             $table->construct_cell($lang[$k]);
             $i = $form->generate_text_box($k, $v, ['size' => 70]);
-            $i.= $lang[$k.'_note'];
+            $i .= $lang[$k . '_note'];
             $table->construct_cell($i);
             $table->construct_row();
         }
@@ -618,21 +632,21 @@ for (var i = 0, len = elements.length; i < len; ++i){
         $table->construct_cell($forumList);
         $table->construct_row();
 
-        foreach ($data['checkbox'] as $k => $v){
+        foreach ($data['checkbox'] as $k => $v) {
             $table->construct_cell($lang[$k]);
             $check = [];
-            if($v>0) $check = ['checked' => true];
-            $i = $form->generate_check_box($k, 1, $lang[$k.'_note'], $check);
+            if ($v > 0) $check = ['checked' => true];
+            $i = $form->generate_check_box($k, 1, $lang[$k . '_note'], $check);
             $table->construct_cell($i);
             $table->construct_row();
         }
 
         $table->construct_cell(
             self::pageFormButtons(
-                $action, 
-                $data['id'], 
-                $action, 
-                $lang['save'], 
+                $action,
+                $data['id'],
+                $action,
+                $lang['save'],
                 $mybb->post_code
             ),
             ['colspan' => 2, 'align' => 'right']);
@@ -640,7 +654,7 @@ for (var i = 0, len = elements.length; i < len; ++i){
         $table->construct_row();
         $table->output($lang['rssBotTitle'] . ' - ' . $lang[$action]);
         $form->end;
-        if(isset($data['id']) && $data['id']<1 && $action == 'edit'){
+        if (isset($data['id']) && $data['id'] < 1 && $action == 'edit') {
             echo self::pageFormDisable();
         }
     }
@@ -648,7 +662,8 @@ for (var i = 0, len = elements.length; i < len; ++i){
     /**
      * @return array
      */
-    public function botSettingsFetchType(){
+    public function botSettingsFetchType()
+    {
         return [
             'auto',
             'curl',
@@ -659,23 +674,24 @@ for (var i = 0, len = elements.length; i < len; ++i){
     }
 
     /**
-     * plugin settings form 
+     * plugin settings form
      * @todo
      */
-    public function botSettingsForm(){
+    public function botSettingsForm()
+    {
         $form = new Form($url, 'post', 'rssBotSettings');
         $txt = '<b>RSS Bot</b> not available yet';
-        $txt.= '<br /><br />';
-        $txt.= 'rss fetch type: ';
-        $txt.= $form->generate_select_box('fetchType', self::botSettingsFetchType(), [0]);
-        $txt.= '<br />';
+        $txt .= '<br /><br />';
+        $txt .= 'rss fetch type: ';
+        $txt .= $form->generate_select_box('fetchType', self::botSettingsFetchType(), [0]);
+        $txt .= '<br />';
         $check = ['checked' => false];
-        $txt.= $form->generate_check_box('dir/cache/rss', 1, $lang['_note'] . 'dir /cache/rss', $check);
-        $txt.= '<br />';
-        $txt.= $form->generate_check_box('wordfilter', 1, $lang['_note'] .'word filter', $check);
+        $txt .= $form->generate_check_box('dir/cache/rss', 1, $lang['_note'] . 'dir /cache/rss', $check);
+        $txt .= '<br />';
+        $txt .= $form->generate_check_box('wordfilter', 1, $lang['_note'] . 'word filter', $check);
         return $txt;
     }
-    
+
     /**
      * load acp plugin settings page
      * @todo
@@ -683,21 +699,21 @@ for (var i = 0, len = elements.length; i < len; ++i){
     public function botSettings()
     {
         global $page;
-        $page->output_nav_tabs(self::pageTabs(),'settings');
+        $page->output_nav_tabs(self::pageTabs(), 'settings');
         $lang = self::loadLang();
-        
+
         $url = self::getLink('action=' . 'settings');
         $txt = '';
-        $txt.= self::botSettingsForm();
-        $txt.= '<br /><br /><hr />';
+        $txt .= self::botSettingsForm();
+        $txt .= '<br /><br /><hr />';
         $text = self::info();
-        foreach ($text as $k => $v){
-            if(stristr($v, 'http')){
+        foreach ($text as $k => $v) {
+            if (stristr($v, 'http')) {
                 $v = '<a href="' . $v . '">' . $v . '</a>';
             }
-            $txt.= '<br />' . $lang[$k] . ': ' . $v;
+            $txt .= '<br />' . $lang[$k] . ': ' . $v;
         }
-        $txt.= '<br /><br />';
+        $txt .= '<br /><br />';
         $table = new Table;
         $table->construct_header($lang['settings']);
         $table->construct_cell('');
@@ -715,7 +731,7 @@ for (var i = 0, len = elements.length; i < len; ++i){
     public function saveData()
     {
         $data = self::checkData($_POST);
-        switch($_POST['action']){
+        switch ($_POST['action']) {
             case 'add':
                 self::saveInsert($data);
                 break;
@@ -732,23 +748,23 @@ for (var i = 0, len = elements.length; i < len; ++i){
     public function checkData($data)
     {
         $data = [
-            'id'        => $data['id'],
-            'pid'       => $data['pid'],
-            'tid'       => $data['tid'],
-            'fid'       => $data['fid'],
-            'enabled'   => (int)$data['enabled'],
-            'html'      => (int)$data['html'],
-            'locked'    => (int)$data['locked'],
-            'asread'    => (int)$data['asread'],
-            'link'      => $data['link'],
-            'toimport'  => $data['toimport'],
+            'id' => $data['id'],
+            'pid' => $data['pid'],
+            'tid' => $data['tid'],
+            'fid' => $data['fid'],
+            'enabled' => (int)$data['enabled'],
+            'html' => (int)$data['html'],
+            'locked' => (int)$data['locked'],
+            'asread' => (int)$data['asread'],
+            'link' => $data['link'],
+            'toimport' => $data['toimport'],
             'intervals' => $data['intervals'],
-            'updated'   => date('Y-m-d H:i:s'),
-            'posterid'  => $data['posterid'],
-            'poster'    => $data['poster'],
-            'title'     => $data['title'],
-            'prefix'    => $data['prefix'],
-            'url'       => $data['url'],
+            'updated' => date('Y-m-d H:i:s'),
+            'posterid' => $data['posterid'],
+            'poster' => $data['poster'],
+            'title' => $data['title'],
+            'prefix' => $data['prefix'],
+            'url' => $data['url'],
         ];
         return $data;
     }
@@ -767,8 +783,8 @@ for (var i = 0, len = elements.length; i < len; ++i){
     public function saveUpdate($data)
     {
         global $db;
-        $res = $db->update_query('rssbot', $data, 'id = '.$data['id'], 1);
-        if($res){
+        $res = $db->update_query('rssbot', $data, 'id = ' . $data['id'], 1);
+        if ($res) {
             self::redirect();
         } else {
             self::redirect('action=edit&id=' . $res);
@@ -782,7 +798,7 @@ for (var i = 0, len = elements.length; i < len; ++i){
     {
         global $db;
         $res = $db->insert_query('rssbot', $data);
-        if($res>0){
+        if ($res > 0) {
             self::redirect('action=edit&id=' . $res);
         } else {
             self::redirect('action=add');
@@ -795,10 +811,10 @@ for (var i = 0, len = elements.length; i < len; ++i){
     public function removeEntry()
     {
         $id = self::getId();
-        if($id>0){
+        if ($id > 0) {
             global $db;
-            $res = $db->delete_query('rssbot', 'id = '.$id, 1);
-            if($res){
+            $res = $db->delete_query('rssbot', 'id = ' . $id, 1);
+            if ($res) {
                 self::redirect();
             }
         } else {
